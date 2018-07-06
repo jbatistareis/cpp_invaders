@@ -9,10 +9,11 @@ sf::Time deltaTime;
 sf::RectangleShape player(sf::Vector2f(24, 10));
 std::vector<sf::RectangleShape> playerProjectiles;
 bool enemyHit = false;
-double timeSinceLastShot = 0;
+double playerTimeSinceLastShot = 0;
 int playerLives = 3;
 double playerSpeed = 250;
 double playerProjSpeed = 5;
+double shotInvterval = 0.5;
 int playerOutsideProjCount = 0;
 
 // enemy settings
@@ -25,6 +26,11 @@ double enemiesXSpeed = 0.5;
 double enemiesYSpeedFactor = 15;
 double enemiesIncrSpeed = 0.07;
 double enemiesProjSpeed = 6;
+double enemiesProjIncrSpeed = 0.07;
+double enemiesShotFreq = 1.0;
+double enemiesShotIncrFreq = 0.01;
+double enemiesTimeSinceLastShot = 0;
+int enemyAimArea = 20;
 int enemyOutsideProjCount = 0;
 
 // move boundaries
@@ -42,14 +48,7 @@ int main() {
 	// instantiate enemies
 	for (int x = 0; x < 5; x++)
 		for (int y = 0; y < 12; y++) {
-			Enemy enemy;
-			enemy.alive = true;
-			enemy.hit = false;
-			enemy.shape = sf::CircleShape(15);
-			enemy.shape.setFillColor(sf::Color::Green);
-			enemy.shape.setPosition(sf::Vector2f(90 + (40 * y), 80 + (40 * x)));
-
-			enemies[x][y] = enemy;
+			enemies[x][y] = Enemy(x, y);
 		}
 
 	while (window.isOpen()) {
@@ -69,8 +68,8 @@ int main() {
 				player.move(-playerSpeed * deltaTime.asSeconds(), 0);
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
-			if (timeSinceLastShot == 0) {
-				timeSinceLastShot += deltaTime.asSeconds();
+			if (playerTimeSinceLastShot == 0) {
+				playerTimeSinceLastShot += deltaTime.asSeconds();
 
 				sf::RectangleShape projectile(sf::Vector2f(6, 10));
 				projectile.setPosition(sf::Vector2f((player.getPosition().x + 9), 462));
@@ -78,10 +77,10 @@ int main() {
 				playerProjectiles.push_back(projectile);
 			}
 
-		if (timeSinceLastShot > 0) {
-			timeSinceLastShot += deltaTime.asSeconds();
-			if (timeSinceLastShot > 0.5)
-				timeSinceLastShot = 0;
+		if (playerTimeSinceLastShot > 0) {
+			playerTimeSinceLastShot += deltaTime.asSeconds();
+			if (playerTimeSinceLastShot > shotInvterval)
+				playerTimeSinceLastShot = 0;
 		}
 
 		// boundaries
@@ -125,6 +124,8 @@ int main() {
 				enemies[x][y].shape.move(sf::Vector2f(enemiesCurrentXSpeed, enemiesCurrentYSpeed));
 
 		// shooting enemies
+		// pick a random number from 1-60
+		// enemies[num / 12][num % 12]
 
 		// draw start
 		window.clear();
@@ -146,7 +147,7 @@ int main() {
 				if ((*iterator).getPosition().y > 500)
 					enemyOutsideProjCount++;
 
-				// collision
+				// collision with player
 				if (player.getGlobalBounds().intersects((*iterator).getGlobalBounds())) {
 					playerHit = true;
 					playerLives--;
@@ -174,6 +175,7 @@ int main() {
 						if (enemies[x][y].alive && enemies[x][y].shape.getGlobalBounds().intersects((*iterator).getGlobalBounds())) {
 							enemies[x][y].alive = false;
 							enemiesXSpeed += enemiesIncrSpeed;
+							enemiesShotFreq -= enemiesShotIncrFreq;
 
 							(*iterator).setPosition(sf::Vector2f(-1, -1));
 

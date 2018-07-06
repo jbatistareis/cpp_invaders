@@ -1,7 +1,12 @@
 #include <SFML/Graphics.hpp>
 
-struct Enemy {
-	bool alive;
-	bool hit;
-	sf::CircleShape shape;
+class Enemy
+{
+public:
+	bool alive = true;
+	bool hit = false;
+	sf::CircleShape shape = sf::CircleShape(15);
+
+	Enemy();
+	Enemy(double x, double y);
 };

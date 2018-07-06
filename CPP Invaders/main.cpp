@@ -2,6 +2,8 @@
 #include <iostream>
 #include <stdlib.h>
 #include <SFML/Graphics.hpp>
+#include "gameScreen.h"
+#include "player.h"
 #include "enemy.h"
 
 sf::Clock deltaClock;
@@ -9,7 +11,7 @@ sf::Time deltaTime;
 
 bool waveOver = false;
 bool gameOver = false;
-bool enemyHit = false;
+int wave = 1;
 int score = 0;
 
 int deadEnemies = 0;
@@ -17,8 +19,8 @@ int deadEnemies = 0;
 // player settings
 sf::RectangleShape player(sf::Vector2f(24, 10));
 std::vector<sf::RectangleShape> playerProjectiles;
-double playerTimeSinceLastShot = 0;
 int playerLives = 3;
+double playerTimeSinceLastShot = 0;
 double playerSpeed = 250;
 double playerProjSpeed = 4;
 double shotInvterval = 0.5;
@@ -27,7 +29,6 @@ int playerOutsideProjCount = 0;
 // enemy settings
 Enemy enemies[5][12] = {};
 std::vector<sf::RectangleShape> enemyProjectiles;
-bool playerHit = false;
 double enemiesCurrentXSpeed;
 double enemiesCurrentYSpeed;
 double enemiesXSpeed = 0.5;
@@ -42,6 +43,10 @@ int enemyAimArea = 20;
 int enemyOutsideProjCount = 0;
 int shootingEnemyId;
 Enemy shootingEnemy;
+
+// misc
+bool playerHit = false;
+bool enemyHit = false;
 
 // move boundaries
 bool enemiesHitXBound = false;

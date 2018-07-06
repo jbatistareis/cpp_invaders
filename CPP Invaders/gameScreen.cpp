@@ -1,12 +1,13 @@
 #include "gameScreen.h"
 
-
-
 GameScreen::GameScreen()
 {
 }
 
+void GameScreen::start()
+{
+}
 
-GameScreen::~GameScreen()
+void GameScreen::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
 }

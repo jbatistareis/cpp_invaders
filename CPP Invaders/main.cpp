@@ -1,19 +1,26 @@
 #pragma once
 #include <iostream>
+#include <stdlib.h>
 #include <SFML/Graphics.hpp>
 #include "enemy.h"
 
 sf::Clock deltaClock;
 sf::Time deltaTime;
 
+bool waveOver = false;
+bool gameOver = false;
+bool enemyHit = false;
+int score = 0;
+
+int deadEnemies = 0;
+
 // player settings
 sf::RectangleShape player(sf::Vector2f(24, 10));
 std::vector<sf::RectangleShape> playerProjectiles;
-bool enemyHit = false;
 double playerTimeSinceLastShot = 0;
 int playerLives = 3;
 double playerSpeed = 250;
-double playerProjSpeed = 5;
+double playerProjSpeed = 4;
 double shotInvterval = 0.5;
 int playerOutsideProjCount = 0;
 
@@ -33,6 +40,8 @@ double enemiesShotIncrFreq = 0.01;
 double enemiesTimeSinceLastShot = 0;
 int enemyAimArea = 20;
 int enemyOutsideProjCount = 0;
+int shootingEnemyId;
+Enemy shootingEnemy;
 
 // move boundaries
 bool enemiesHitXBound = false;
@@ -84,7 +93,7 @@ int main() {
 				playerTimeSinceLastShot = 0;
 		}
 
-		// boundaries
+		// boundaries and dead count
 		for (int x = 4; x >= 0; x--) {
 			// min
 			for (int y = 0; y < 12; y++)
@@ -100,22 +109,29 @@ int main() {
 						break;
 					}
 				}
-
-			// max
-			for (int j = 11; j >= 0; j--)
-				if (enemies[x][j].alive) {
-					// x
-					if (enemies[x][j].getPosition().x > 605) {
-						enemiesHitXBound = true;
-						break;
-					}
-					// y
-					if (enemies[x][j].getPosition().y > 300) {
-						enemiesHitYBound = true;
-						break;
-					}
+				else {
+					deadEnemies++;
 				}
+
+				// max
+				for (int j = 11; j >= 0; j--)
+					if (enemies[x][j].alive) {
+						// x
+						if (enemies[x][j].getPosition().x > 605) {
+							enemiesHitXBound = true;
+							break;
+						}
+						// y
+						if (enemies[x][j].getPosition().y > 300) {
+							enemiesHitYBound = true;
+							break;
+						}
+					}
 		}
+
+		// wave signal
+		if (deadEnemies >= 60)
+			waveOver = true;
 
 		// move enemies
 		enemiesCurrentXSpeed = enemiesHitXBound ? -enemiesXSpeed : enemiesXSpeed;
@@ -127,6 +143,24 @@ int main() {
 		// shooting enemies
 		// pick a random number from 1-60
 		// enemies[num / 12][num % 12]
+		if (enemiesTimeSinceLastShot >= enemiesShotFreq) {
+			enemiesTimeSinceLastShot = 0;
+
+			do {
+				shootingEnemyId = (rand() % 59) + 1;
+				shootingEnemy = enemies[shootingEnemyId / 12][shootingEnemyId % 12];
+			} while (!shootingEnemy.alive);
+
+			sf::RectangleShape projectile(sf::Vector2f(6, 10));
+			projectile.setPosition(sf::Vector2f((
+				shootingEnemy.getPosition().x + 12),
+				shootingEnemy.getPosition().y + 15));
+
+			enemyProjectiles.push_back(projectile);
+		}
+		else {
+			enemiesTimeSinceLastShot += deltaTime.asSeconds();
+		}
 
 		// draw start
 		window.clear();
@@ -140,19 +174,31 @@ int main() {
 					window.draw(enemies[i][j]);
 
 		// enemy projectiles
-		for (auto iterator = enemyProjectiles.begin(); iterator != enemyProjectiles.end(); iterator++)
-			if ((*iterator).getPosition().y < 500) {
-				(*iterator).move(sf::Vector2f(0, enemiesProjSpeed));
-				window.draw((*iterator));
+		for (auto enemyProjIter = enemyProjectiles.begin(); enemyProjIter != enemyProjectiles.end(); enemyProjIter++)
+			if ((*enemyProjIter).getPosition().y < 500) {
+				(*enemyProjIter).move(sf::Vector2f(0, enemiesProjSpeed));
+				window.draw((*enemyProjIter));
 
-				if ((*iterator).getPosition().y > 500)
+				if ((*enemyProjIter).getPosition().y > 500)
 					enemyOutsideProjCount++;
 
+				// collision with player projectile
+				for (auto playerProjIter = playerProjectiles.begin(); playerProjIter != playerProjectiles.end(); playerProjIter++) {
+					if ((*playerProjIter).getGlobalBounds().intersects((*enemyProjIter).getGlobalBounds())) {
+						(*playerProjIter).setPosition(sf::Vector2f(0, -1));
+						(*enemyProjIter).setPosition(sf::Vector2f(0, 501));
+					}
+				}
+
 				// collision with player
-				if (player.getGlobalBounds().intersects((*iterator).getGlobalBounds())) {
+				if (player.getGlobalBounds().intersects((*enemyProjIter).getGlobalBounds())) {
 					playerHit = true;
 					playerLives--;
 				}
+
+				// game over
+				if (playerLives <= 0)
+					gameOver = true;
 			}
 
 		if (enemyOutsideProjCount >= enemyProjectiles.size()) {

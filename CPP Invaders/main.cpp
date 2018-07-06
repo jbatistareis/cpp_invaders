@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include "enemy.h"
@@ -89,12 +90,12 @@ int main() {
 			for (int y = 0; y < 12; y++)
 				if (enemies[x][y].alive) {
 					// x
-					if (enemies[x][y].shape.getPosition().x < 5) {
+					if (enemies[x][y].getPosition().x < 5) {
 						enemiesHitXBound = false;
 						break;
 					}
 					// y
-					if (enemies[x][y].shape.getPosition().y < 40) {
+					if (enemies[x][y].getPosition().y < 40) {
 						enemiesHitYBound = false;
 						break;
 					}
@@ -104,12 +105,12 @@ int main() {
 			for (int j = 11; j >= 0; j--)
 				if (enemies[x][j].alive) {
 					// x
-					if (enemies[x][j].shape.getPosition().x > 605) {
+					if (enemies[x][j].getPosition().x > 605) {
 						enemiesHitXBound = true;
 						break;
 					}
 					// y
-					if (enemies[x][j].shape.getPosition().y > 300) {
+					if (enemies[x][j].getPosition().y > 300) {
 						enemiesHitYBound = true;
 						break;
 					}
@@ -121,7 +122,7 @@ int main() {
 		enemiesCurrentYSpeed = enemiesHitYBound ? -enemiesXSpeed / enemiesYSpeedFactor : enemiesXSpeed / enemiesYSpeedFactor;
 		for (int x = 0; x < 5; x++)
 			for (int y = 0; y < 12; y++)
-				enemies[x][y].shape.move(sf::Vector2f(enemiesCurrentXSpeed, enemiesCurrentYSpeed));
+				enemies[x][y].move(sf::Vector2f(enemiesCurrentXSpeed, enemiesCurrentYSpeed));
 
 		// shooting enemies
 		// pick a random number from 1-60
@@ -136,7 +137,7 @@ int main() {
 		for (int i = 0; i < 5; i++)
 			for (int j = 0; j < 12; j++)
 				if (enemies[i][j].alive)
-					window.draw(enemies[i][j].shape);
+					window.draw(enemies[i][j]);
 
 		// enemy projectiles
 		for (auto iterator = enemyProjectiles.begin(); iterator != enemyProjectiles.end(); iterator++)
@@ -172,7 +173,7 @@ int main() {
 				// collision
 				for (int x = 4; x >= 0; x--) {
 					for (int y = 0; y < 12; y++) {
-						if (enemies[x][y].alive && enemies[x][y].shape.getGlobalBounds().intersects((*iterator).getGlobalBounds())) {
+						if (enemies[x][y].alive && enemies[x][y].getGlobalBounds().intersects((*iterator).getGlobalBounds())) {
 							enemies[x][y].alive = false;
 							enemiesXSpeed += enemiesIncrSpeed;
 							enemiesShotFreq -= enemiesShotIncrFreq;

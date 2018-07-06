@@ -36,6 +36,9 @@
     <ClCompile Include="gameScreen.cpp">
       <Filter>Source Files\screens</Filter>
     </ClCompile>
+    <ClCompile Include="player.cpp">
+      <Filter>Source Files\entities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="enemy.h">
@@ -43,6 +46,9 @@
     </ClInclude>
     <ClInclude Include="gameScreen.h">
       <Filter>Header Files\screen</Filter>
+    </ClInclude>
+    <ClInclude Include="player.h">
+      <Filter>Header Files\entities</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

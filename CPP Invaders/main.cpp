@@ -2,10 +2,12 @@
 #include <iostream>
 #include <stdlib.h>
 #include <SFML/Graphics.hpp>
+#include "game.h"
 #include "gameScreen.h"
 #include "player.h"
 #include "enemy.h"
 
+Game game;
 sf::Clock deltaClock;
 sf::Time deltaTime;
 
@@ -203,7 +205,7 @@ int main() {
 
 				// game over
 				if (playerLives <= 0)
-					gameOver = true;
+					game.currentState = Game::GAMEOVER;
 			}
 
 		if (enemyOutsideProjCount >= enemyProjectiles.size()) {

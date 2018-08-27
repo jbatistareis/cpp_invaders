@@ -1,16 +1,36 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-class Player : public sf::Drawable, public sf::Transformable
+class Player
 {
 public:
 	Player();
-
-	const sf::Vector2f& getPosition() const;
-	void move(const sf::Vector2f& offset);
-	sf::FloatRect getGlobalBounds() const;
+	void moveLeft(float& deltaTime);
+	void moveRight(float& deltaTime);
+	void shoot(float& deltaTime);
+	void resetPositon();
+	int getLives();
+	void reduceLive();
+	void oneUp();
+	std::vector<sf::RectangleShape>& getProjectiles();
+	void outsideProjCountAdd();
+	void outsideProjCountReset();
+	int getOutsideProjCount();
+	double getProjSpeed();
+	sf::FloatRect getBounds();
+	void draw(sf::RenderWindow& window, float& deltaTime);
 
 private:
-	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+	// replace for sprite
+	sf::RectangleShape player;
+	std::vector<sf::RectangleShape> projectiles;
+	int outsideProjCount = 0;
+	int lives = 3;
+	bool hit = false;
+	double timeSinceLastShot = 0;
+	double speed = 250;
+	double projSpeed = 4;
+	double shotInvterval = 0.5;
+	
 };
 

@@ -22,7 +22,7 @@
     <Filter Include="Header Files\entities">
       <UniqueIdentifier>{4cdaf24b-c9f5-4f27-b8e3-69eda1499aaf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\screen">
+    <Filter Include="Header Files\screens">
       <UniqueIdentifier>{910f9d0f-5bb1-436f-b524-ee8d8fe1cac6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -45,12 +45,15 @@
       <Filter>Header Files\entities</Filter>
     </ClInclude>
     <ClInclude Include="gameScreen.h">
-      <Filter>Header Files\screen</Filter>
+      <Filter>Header Files\screens</Filter>
     </ClInclude>
     <ClInclude Include="player.h">
       <Filter>Header Files\entities</Filter>
     </ClInclude>
-    <ClInclude Include="game.h">
+    <ClInclude Include="gameInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
